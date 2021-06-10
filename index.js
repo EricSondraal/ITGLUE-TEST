@@ -101,14 +101,24 @@ app.get(endPointRoot + "payment-amount/", (req, res) => {
     res.status(406);
     res.json({
       result: "fail",
-      message: "Error: Down Payment Is Too Low"
+      message: "Error: down payment is too low"
     });
     return;
   }
 
+    //check if there is too much of a down payment
+    if(downPayment > askingPrice){
+      res.status(406);
+      res.json({
+        result: "fail",
+        message: "Error: Down payment is greater than the asking price"
+      });
+      return;
+    }
+
   //calculate how much the insurance will cost
   let insurancePrice = GetInsuranceCost(downPayment,askingPrice);
-  let totalPrice = askingPrice + insurancePrice;
+  let totalPrice = askingPrice + insurancePrice - downPayment;
 
   //check how many times they need to pay a year
   let paymentsPerYear = ConvertPaymentSchedule(paymentSchedule);
